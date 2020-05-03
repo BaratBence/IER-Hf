@@ -1,33 +1,31 @@
 public class Table
 {
-	private int x,y,seats;
+	private Integer x,y,seats;
+	private Costumers cost;
 	private Boolean taken;
-	private enum status {
-		Free("Free"), Taken("Taken"), Order("Order"), Ordered("Ordered"), Eating("Eating");
-		private String state;
-		private status(String s)
-		{
-			state=s;
-		}
-		public String toString()
-		{
-			return this.state;
-		}
-	};
-	private status currentstatus;
-	public Table(int xp, int yp,int seatsp)
+	
+	
+	public Table(Integer xp, Integer yp,Integer seatsp)
 	{
 		x=xp; y=yp; seats=seatsp;
 		taken=false;
-		currentstatus = status.Free;
+		
 	}
-	public int getX() {
+	public void setCostumers(Costumers costp)
+	{
+		cost=costp;
+	}
+	public Costumers getCostumers()
+	{
+		return cost;
+	}
+	public Integer getX() {
 		return x;
 	}
-	public int getY() {
+	public Integer getY() {
 		return y;
 	}
-	public int getSeats() {
+	public Integer getSeats() {
 		return seats;
 	}
 	public Boolean getTaken() {
@@ -36,27 +34,6 @@ public class Table
 	public void serTaken(Boolean takenp) {
 	    taken=takenp;
 	}
-	public String getCurrentStatus()
-	{
-		return currentstatus.toString();
-	}
-	public void nextStatus()
-	{
-		switch(currentstatus)
-		{
-		case Free:
-			currentstatus= status.Taken;
-			break;
-		case Taken:
-			currentstatus= status.Order;
-			break;
-		case Order:
-			currentstatus= status.Ordered;
-			break;
-		case Ordered:
-			currentstatus= status.Eating;
-			break;
-		}
-	}
+	
 	
 }
