@@ -1,7 +1,9 @@
+
+
 public class Table
 {
 	private Integer x,y,seats;
-	private Costumers cost;
+	private Customers cost;
 	private Boolean taken;
 	
 	
@@ -11,11 +13,11 @@ public class Table
 		taken=false;
 		
 	}
-	public void setCostumers(Costumers costp)
+	public void setCostumers(Customers costp)
 	{
 		cost=costp;
 	}
-	public Costumers getCostumers()
+	public Customers getCostumers()
 	{
 		return cost;
 	}

@@ -6,7 +6,7 @@ public class Host
 {
 	private Location HostTarget= new Location(-1,-1);
 	private Boolean IsFollowed = false, Back=false;
-	public void findTable(ArrayList<Table> tables,ArrayList<Costumers> Waiting)
+	public void findTable(ArrayList<Table> tables,ArrayList<Customers> Waiting)
     {
     	for(int i=0;i<tables.size();i++)
     	{
@@ -19,7 +19,7 @@ public class Host
     	}
     	else Waiting.remove(0);
     }
-    public void LeadToTable(ArrayList<Table> tables,ArrayList<Costumers> Waiting,RestaurantModel model,RestaurantView view)
+    public void LeadToTable(ArrayList<Table> tables,ArrayList<Customers> Waiting,RestaurantModel model,RestaurantView view)
     {
     	Location host = model.getAgPos(1);
     	if(host.y!=HostTarget.y+1) host.y--;

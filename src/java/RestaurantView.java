@@ -7,10 +7,14 @@ import jason.environment.grid.GridWorldView;
 
 class RestaurantView extends GridWorldView {
 		private ArrayList<Table> tables=new ArrayList<Table>();
-        public RestaurantView(RestaurantModel model,ArrayList<Table> tables) {
-            super(model, "Mars World", 600);
+		private ArrayList<StorageBox> Storage=new ArrayList<StorageBox>();
+		private ArrayList<Machine> Machines=new ArrayList<Machine>();
+        public RestaurantView(RestaurantModel model,ArrayList<Table> tables,ArrayList<StorageBox> Storage,ArrayList<Machine> Machines) {
+            super(model, "Restaurant", 600);
             this.tables=tables;
-            defaultFont = new Font("Arial", Font.BOLD, 10);
+            this.Storage=Storage;
+            this.Machines=Machines;
+            defaultFont = new Font("Arial", Font.BOLD, 9);
             setVisible(true);
         }
        
@@ -23,16 +27,27 @@ class RestaurantView extends GridWorldView {
             case RestaurantEnv.TABLE:
             	drawTable(g,x,y);
             	break;
+            case RestaurantEnv.INGREDIENT:
+            	drawIngredient(g,x,y);
+            	break;
+            case RestaurantEnv.MACHINE:
+            	drawMachine(g,x,y);
+            	break;
+            case RestaurantEnv.OBSTICLE:
+            	drawObst(g,x,y);
+            	break;
             }
         }
 
         @Override
         public void drawAgent(Graphics g, int x, int y, Color c, int id) {
-            String label = "C"+(id+1);
+            String label;
             c = Color.blue;
             super.drawAgent(g, x, y, c, 1);
-            if (id == 0) g.setColor(Color.black);
-            else g.setColor(Color.white);
+            if (id == 0) label="Waiter" ;
+            else if(id == 1) label="Host";
+            else label="Chef";
+            g.setColor(Color.white);
             super.drawString(g, x, y, defaultFont, label);
         }
         public void drawWall(Graphics g, int x, int y) {
@@ -40,7 +55,7 @@ class RestaurantView extends GridWorldView {
         }
         public void drawTable(Graphics g,int x, int y) {
         	super.drawObstacle(g, x, y);
-        	Integer id=0; String status=""; Costumers cost;
+        	Integer id=0; String status=""; Customers cost;
         	for(int i=0;i<tables.size();i++) 
         		if(tables.get(i).getX() == x && tables.get(i).getY() == y) 
         		{ 
@@ -52,5 +67,22 @@ class RestaurantView extends GridWorldView {
             g.setColor(Color.RED);
             drawString(g, x, y, defaultFont, "Table"+ id.toString()+ " " + status);
         }
-
+        public void drawIngredient(Graphics g,int x, int y) {
+        	super.drawObstacle(g, x, y);
+        	g.setColor(Color.RED);
+        	for(int i=0;i<Storage.size();i++) 
+        		if(Storage.get(i).getX() == x && Storage.get(i).getY() == y) drawString(g, x, y, defaultFont,Storage.get(i).getIngredient().getName() + " " + Storage.get(i).getIngredient().getAmount().toString());
+        }
+        public void drawMachine(Graphics g,int x, int y) {
+        	super.drawObstacle(g, x, y);
+        	g.setColor(Color.RED);
+        	for(int i=0;i<Machines.size();i++) 
+        		if(Machines.get(i).getX() == x && Machines.get(i).getY() == y) drawString(g, x, y, defaultFont,Machines.get(i).getname() + " " + Machines.get(i).getStatus());
+        }
+        public void drawObst(Graphics g,int x, int y) {
+        	super.drawObstacle(g, x, y);
+        	g.setColor(Color.RED);
+        	if(x == 7 && y ==2) drawString(g, x, y, defaultFont,"Orders");
+        	else drawString(g, x, y, defaultFont,"table");
+        }
     }

@@ -1,12 +1,14 @@
 import java.util.ArrayList;
 
+import Kitchen.Ingredient;
 import jason.environment.grid.GridWorldModel;
 
 public class RestaurantModel extends GridWorldModel {
-    	public RestaurantModel(Integer RestaurantLength,Integer RestaurantSize,int WALL,int TABLE,ArrayList<Table> tables,ArrayList<Costumers> Waiting) {
-            super(RestaurantLength,RestaurantSize, 2);
-            setAgPos(0, 1, 2);
+    	public RestaurantModel(Integer RestaurantLength,Integer RestaurantSize,int WALL,int TABLE,int INGREDIENT,int MACHINE,int OBSTICLE,ArrayList<Table> tables,ArrayList<StorageBox> Storage,ArrayList<Machine> Machines) {
+            super(RestaurantLength,RestaurantSize, 3);
+            setAgPos(0, 1, 5);
             setAgPos(1, 4,12);
+            setAgPos(2,6,2);
             for(int i=0;i<RestaurantSize;i++)
             	for(int j=0; j<RestaurantLength;j++)
             	{
@@ -14,6 +16,7 @@ public class RestaurantModel extends GridWorldModel {
 
             	}
             for(int i=0;i<RestaurantLength-2;i++) add(WALL,i,4);
+            add(WALL,7,3);
             for(int i=6;i<11;i+=2)
             {
             	add(TABLE,1,i); tables.add(new Table(1,i,4));
@@ -21,7 +24,19 @@ public class RestaurantModel extends GridWorldModel {
                 add(TABLE,5,i); tables.add(new Table(5,i,4));
                 add(TABLE,7,i); tables.add(new Table(7,i,4));
             }
-            Waiting.add(new Costumers(100,100,4));
-            Waiting.add(new Costumers(100,100,4));
+            add(INGREDIENT,1,3);
+            add(INGREDIENT,2,3);
+            add(INGREDIENT,3,3);
+            add(INGREDIENT,4,3);
+            for(int i=1;i<5;i++) add(OBSTICLE,i,1);
+            add(OBSTICLE,7,2);
+            add(MACHINE,5,3);
+            add(MACHINE,6,3);
+            Machines.add(new Machine("Oven",5,3));
+            Machines.add(new Machine("Stove",6,3));
+            Storage.add(new StorageBox(1,3,new Ingredient("A",20,false)));
+            Storage.add(new StorageBox(2,3,new Ingredient("B",30,false)));
+            Storage.add(new StorageBox(3,3,new Ingredient("C",20,false)));
+            Storage.add(new StorageBox(4,3,new Ingredient("D",20,false)));
         }       
 }
