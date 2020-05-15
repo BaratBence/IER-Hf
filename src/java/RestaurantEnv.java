@@ -36,8 +36,7 @@ public class RestaurantEnv extends Environment {
         Waiting.add(new Customers(100,100,4));
         Waiting.add(new Customers(100,100,4));
         Order tmp=new Order();
-        tmp.setOrder("SoupA",1);
-        tmp.setOrder("SoupB",1);
+        tmp.setOrder("SoupA",5);
         Orders.add(tmp);
         model.setView(view);
         updatePercepts();
@@ -52,6 +51,9 @@ public class RestaurantEnv extends Environment {
             else if(action.getFunctor().equals("leadToTable")) {host.LeadToTable(tables,Waiting,model,view); }
             else if(action.getFunctor().equals("goBack")) {host.GetBack(model); }
             else if(action.getFunctor().equals("checkResources")) {chef.CheckResources(Storage,Orders); }
+            else if(action.getFunctor().equals("prepare")) {chef.Prepare(Storage); }
+            else if(action.getFunctor().equals("moveTo")) {chef.moveTo(model); }
+            else if(action.getFunctor().equals("pickUp")) {chef.pickUp(Storage,model,view,Machines); }
             else return false;
         } catch (Exception e) {}
         updatePercepts();
@@ -67,12 +69,14 @@ public class RestaurantEnv extends Environment {
 
         addPercept(Literal.parseLiteral("pos(waiter," +model.getAgPos(0).x + "," + model.getAgPos(0).y + ")"));
         addPercept(Literal.parseLiteral("pos(host," + model.getAgPos(1).x + "," + model.getAgPos(1).y + ")"));
-        addPercept(Literal.parseLiteral("pos(chef)," + model.getAgPos(2).x + "," +model.getAgPos(2).y +")"));
         addPercept("host",Literal.parseLiteral("findtable("+ Waiting.size() +","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+")"));
         addPercept("host",Literal.parseLiteral("getTable("+ host.getIsFollowed() + ","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+ ")"));
         addPercept("host",Literal.parseLiteral("getBack("+ host.getBack() + ","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+ ")"));
         addPercept("chef",Literal.parseLiteral("checkResources("+ Orders.size() +","+ model.getAgPos(2).x + "," + model.getAgPos(2).y+")"));
-        addPercept("chef",Literal.parseLiteral("chefKnows("+chef.getWork() +"," + chef.getProblem()+")"));
+        addPercept("chef",Literal.parseLiteral("chef("+chef.a +"," + chef.b+","+chef.c+","+chef.d+","+chef.getTargetx()+","+chef.al+")"));
+        addPercept("chef",Literal.parseLiteral("prepare("+chef.getWork()+","+chef.getMoveTo()+","+chef.getCarrying().getAmount()+")"));
+        addPercept("chef",Literal.parseLiteral("chopping("+ chef.getCarrying().getChopped()+")"));
+        addPercept("chef",Literal.parseLiteral("moveTo("+chef.getMoveTo()+","+chef.getTargetx()+","+model.getAgPos(2).x +")"));
     }
 
     

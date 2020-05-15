@@ -20,6 +20,10 @@ public class Ingredient {
 	{
 		Amount=amount;
 	}
+	public void setChopped(Boolean chopped)
+	{
+		Chopped=chopped;
+	}
 	public Boolean getChopped()
 	{
 		return Chopped;
@@ -27,5 +31,9 @@ public class Ingredient {
 	public String getName()
 	{
 		return Name;
+	}
+	public void setName(String name)
+	{
+		Name=name;
 	}
 }

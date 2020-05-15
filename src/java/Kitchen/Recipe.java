@@ -4,9 +4,9 @@ import java.util.ArrayList;
 public class Recipe {
 	private String Name;
 	private ArrayList<Ingredient> Ingredient = new ArrayList<Ingredient>();
-	private Integer CookingTime,BakingTime;
+	private Integer CookingTime,BakingTime,Output;
 	private Boolean Cooked,Baked;
-	public Recipe(String name,ArrayList<Ingredient> ingredient,Boolean cooked,Integer cookingTime,Boolean baked,Integer bakingTime)
+	public Recipe(String name,ArrayList<Ingredient> ingredient,Boolean cooked,Integer cookingTime,Boolean baked,Integer bakingTime,Integer output)
 	{
 		Name=name;
 		Ingredient=ingredient;
@@ -14,6 +14,7 @@ public class Recipe {
 		CookingTime=cookingTime;
 		Baked=baked;
 		BakingTime=bakingTime;
+		Output = output;
 	}
 	public String getName()
 	{
@@ -22,6 +23,10 @@ public class Recipe {
 	public Integer getCookingTime()
 	{
 		return CookingTime;
+	}
+	public Integer getOutput()
+	{
+		return Output;
 	}
 	public Integer getBakingTime()
 	{
