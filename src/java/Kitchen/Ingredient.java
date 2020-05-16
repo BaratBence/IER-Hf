@@ -10,7 +10,12 @@ public class Ingredient {
 		Amount=amount;
 		Chopped=chopped;
 	}
-	
+	public void SetIngredient(Ingredient param)
+	{
+		Name=param.getName();
+		Amount=param.getAmount();
+		Chopped=param.getChopped();
+	}
 	public Integer getAmount()
 	{
 		return Amount;
