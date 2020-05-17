@@ -16,6 +16,16 @@ public class Recipe {
 		BakingTime=bakingTime;
 		Output = output;
 	}
+	public void setRecipe(Recipe param)
+	{
+		Name=param.getName();
+		Ingredient=param.getIngredients();
+		Cooked=param.getCooked();
+		CookingTime=param.getCookingTime();
+		Baked=param.getBaked();
+		BakingTime=param.getBakingTime();
+		Output = param.getOutput();
+	}
 	public String getName()
 	{
 		return Name;

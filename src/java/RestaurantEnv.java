@@ -36,7 +36,14 @@ public class RestaurantEnv extends Environment {
         Waiting.add(new Customers(100,100,4));
         Waiting.add(new Customers(100,100,4));
         Order tmp=new Order();
-        tmp.setOrder("SoupA",5);
+        //ArrayList<String> a= new ArrayList<String>();
+        //a.add("MainB");
+        //a.add("MainB");
+        //ArrayList<Integer> b=new ArrayList<Integer>();
+        //b.add(1);
+        //b.add(1);
+        //tmp.setOrders(a, b);
+        tmp.setOrder("MainB", 1);
         Orders.add(tmp);
         model.setView(view);
         updatePercepts();
@@ -44,13 +51,6 @@ public class RestaurantEnv extends Environment {
 
     @Override
     public boolean executeAction(String ag, Structure action) {
-    	/*if(a)
-    	{
-    		a=false;
-    	Machines.get(0).setTime(100);
-    	Machines.get(0).setview(view);
-    	Machines.get(0).start();
-    	}*/
         logger.info(ag+" doing: "+ action);
         try {
             if (action.getFunctor().equals("next")) { waiter.nextSlot(model); } 
@@ -83,15 +83,9 @@ public class RestaurantEnv extends Environment {
         addPercept("host",Literal.parseLiteral("findtable("+ Waiting.size() +","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+")"));
         addPercept("host",Literal.parseLiteral("getTable("+ host.getIsFollowed() + ","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+ ")"));
         addPercept("host",Literal.parseLiteral("getBack("+ host.getBack() + ","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+ ")"));
-        addPercept("chef",Literal.parseLiteral("checkResources("+ Orders.size() +","+ model.getAgPos(2).x + "," + model.getAgPos(2).y+","+chef.getWork()+")"));
-        addPercept("chef",Literal.parseLiteral("chefStatusTargetXCarried("+chef.status +","+chef.getTargetx()+","+chef.carried+","+chef.getWaiting()+")"));
-        addPercept("chef",Literal.parseLiteral("prepare("+chef.getWork()+","+chef.getMoveTo()+","+chef.getCarrying().getAmount()+","+chef.getGather()+")"));
+        addPercept("chef",Literal.parseLiteral("chefStatusTargetXCarried("+chef.status +","+chef.a+","+chef.b+","+chef.c+","+chef.d+")"));
         addPercept("chef",Literal.parseLiteral("chopping("+ chef.getCarrying().getChopped()+")"));
-        addPercept("chef",Literal.parseLiteral("moveTo("+chef.getMoveTo()+","+chef.getTargetx()+","+model.getAgPos(2).x +")"));
-        addPercept("chef",Literal.parseLiteral("putin("+model.getAgPos(2).x+","+chef.getCarrying().getAmount()+","+chef.getMoveTo()+")"));
-        addPercept("chef",Literal.parseLiteral("cooking("+model.getAgPos(2).x+","+chef.getWaiting()+")"));
-        addPercept("chef",Literal.parseLiteral("baking("+model.getAgPos(2).x+","+chef.getWaiting()+")"));
-        addPercept("chef",Literal.parseLiteral("serve("+Machines.get(1).getStatus()+")"));
+        addPercept("chef",Literal.parseLiteral("stateMachine("+Machines.get(1).getStatus()+","+Machines.get(0).getStatus()+","+ model.getAgPos(2).x+","+chef.TargetX+","+chef.getCheckResources()+","+chef.getPrepare()+","+chef.getMoveTo()+","+chef.getServe()+","+chef.getMake()+")"));
     }
 
     

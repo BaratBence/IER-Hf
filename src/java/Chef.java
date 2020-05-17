@@ -7,13 +7,40 @@ import Kitchen.Recipes;
 import jason.environment.grid.Location;
 
 public class Chef {
-	private Boolean problem=false,Work=false,Waiting=false,MoveTo=false,Gather=false;
-	private Ingredient Carrying = new Ingredient("",0,false);
-	private Recipe Active=new Recipe("",null,false,0,false,0,0);
-	private Recipes RecipeBook=new Recipes();
-	private Order Picked=new Order(),LeftOver=new Order();
+	//states
+	private Boolean CheckResources,problem,Prepare,MoveTo,PickUp,PutIn,Serve,Make,SumUp,FoundRecipe;
+	private Ingredient Carrying;
+	private Recipe Active;
+	private Recipes RecipeBook;
+	private Order Picked,Ready,LeftOver;
 	public Integer a=0,b=0,c=0,d=0,e=0,TargetX=0,TargetY=0;
-	public String al="a",status="a",carried="b",k="a";
+	public String bl="a",al="a",status="a",carried="b",k="a";
+	public Chef()
+	{
+		Picked=new Order();
+		LeftOver=new Order();
+		FoundRecipe=false;
+		//LeftOver.setOrder("SoupA", 4);
+		Ready=new Order();
+		Carrying=new Ingredient("",0,false);
+		Active=new Recipe("",null,false,0,false,0,0);
+		RecipeBook=new Recipes();
+		CheckResources=true;
+		problem=false;
+		SumUp=false;
+		Prepare=false;
+		MoveTo=false;
+		PickUp=false;
+		PutIn=false;
+		Serve=false;
+		Make=false;
+		LeftOver.setOrder("SoupA", 0);
+		LeftOver.setOrder("SoupB", 0);
+		LeftOver.setOrder("MainA", 0);
+		LeftOver.setOrder("MainB", 0);
+		LeftOver.setOrder("DessertA", 0);
+		LeftOver.setOrder("DessertB", 0);
+	}
 	public void CheckResources(ArrayList<StorageBox> Storage,ArrayList<Order> Orders)
 	{
 		status="checkResources";
@@ -23,7 +50,8 @@ public class Chef {
 		Required.add(new Ingredient("C",0,false));
 		Required.add(new Ingredient("D",0,false));
 		Picked=Orders.get(0);
-		CheckLeft(Picked);
+		Ready=Orders.get(0);
+		Sumup();
 		for(int i=0;i<Picked.getOrders().size();i++)
 		{
 			FindRecipe(Picked.getOrders().get(i));
@@ -47,58 +75,58 @@ public class Chef {
 				if(Required.get(j).getName().equals(Storage.get(i).getIngredient().getName()) && Required.get(j).getAmount()>Storage.get(i).getIngredient().getAmount()) problem=true;
 			}
 		}
+		
 		if(!problem) 
 			{
 				//Orders.remove(0);
-				Work=true;
+				FoundRecipe=false;
+				Prepare=true;
+				CheckResources=false;
 			}
 	}	
-	private void CheckLeft(Order Picked)
-	{
-		for(int i=0;i<Picked.getOrders().size();i++)
-		{
-			for(int j=0;j<LeftOver.getOrders().size();j++)
-			{
-				if(Picked.getOrders().get(i).equals(LeftOver.getOrders().get(j)))
-				{
-					if(LeftOver.getAmount().get(j)>=Picked.getAmount().get(i))
-					{
-						LeftOver.getAmount().set(j, LeftOver.getAmount().get(j)-Picked.getAmount().get(i));
-						Picked.getAmount().set(i, 0);
-					
-					}
-					else 
-					{	
-						Picked.getAmount().set(i,Picked.getAmount().get(i)-LeftOver.getAmount().get(j));
-						LeftOver.getAmount().set(j, 0);
-					}
-				}
-			}
-		}
-	}
 	public void Prepare(ArrayList<StorageBox> Storage)
 	{
 		status="prepare";
-		FindRecipe(Picked.getOrders().get(0));
-		
+		Sumup();
+		if(Finished()) status="done";
+		else
+		{	
+		if(!FoundRecipe) FindRecipe(Picked.getOrders().get(0));
 		for(int i=0;i<Active.getIngredients().size();i++)
 		{
 			for(int j=0;j<Storage.size();j++)
 			{
 				if(Active.getIngredients().get(i).getName().equals(Storage.get(j).getIngredient().getName()) && Active.getIngredients().get(i).getAmount()>0)
 				{
-					carried=Active.getIngredients().get(i).getName();
-					b=Active.getIngredients().get(i).getAmount();
 					TargetX=Storage.get(j).getX();
+					Prepare=false;
 					MoveTo=true;
-					Gather=true;
 					return;
 				}
 				
 			}
 		}
-		Waiting=true;
-		
+		Prepare=false;
+		Make=true;
+		}
+	}
+	private void FindRecipe(String Meal)
+	{
+		for(int i=0;i<RecipeBook.getBook().size();i++)
+		{
+			if(RecipeBook.getBook().get(i).getName().equals(Meal))
+				{
+					Recipe tmp=RecipeBook.getBook().get(i);
+					ArrayList<Ingredient> Ing = new ArrayList<Ingredient>();
+					for(int j=0;j<tmp.getIngredients().size();j++)
+					{
+					Ing.add(new Ingredient(tmp.getIngredients().get(j).getName(),tmp.getIngredients().get(j).getAmount(),tmp.getIngredients().get(j).getChopped()));
+					Active=new Recipe(tmp.getName(),Ing,tmp.getCooked(),tmp.getCookingTime(),tmp.getBaked(),tmp.getBakingTime(),tmp.getOutput());
+					FoundRecipe=true;
+					
+					}
+				}
+		}
 	}
 	public void moveTo(RestaurantModel model,ArrayList<Machine> Machines)
 	{
@@ -108,7 +136,6 @@ public class Chef {
 		else position.x++;
 		model.setAgPos(2, position);
 		if(position.x == TargetX) MoveTo=false;
-	
 	}
 	public void pickUp(ArrayList<StorageBox> Storage,RestaurantModel model,RestaurantView view,ArrayList<Machine> Machines)
 	{
@@ -117,8 +144,6 @@ public class Chef {
 			if(Storage.get(i).getX()==model.getAgPos(2).x)
 			{
 				Carrying.SetIngredient(getActionIngredient(Storage.get(i).getIngredient().getName()));
-				al=Carrying.getName();
-				a=Carrying.getAmount();
 				Storage.get(i).getIngredient().setAmount(Storage.get(i).getIngredient().getAmount()-Carrying.getAmount());
 				
 				CompleteIngredient(Carrying.getName());
@@ -127,7 +152,7 @@ public class Chef {
 					{
 						for(int j=0;j<Machines.size();j++)
 						{
-							if(Machines.get(j).getname().equals("Owen")) TargetX=Machines.get(j).getX();
+							if(Machines.get(j).getname().equals("Oven")) TargetX=Machines.get(j).getX();
 							MoveTo=true;
 						}
 					}
@@ -137,7 +162,6 @@ public class Chef {
 						{
 							if(Machines.get(j).getname().equals("Stove")) TargetX=Machines.get(j).getX();
 							MoveTo=true;
-							a=Carrying.getAmount();
 						}
 					}
 					else 
@@ -154,9 +178,7 @@ public class Chef {
 		{
 			if(Active.getIngredients().get(i).getName().equals(item))
 			{
-				
 				Active.getIngredients().get(i).setAmount(0);
-				b=Carrying.getAmount();
 			}
 		}
 	}
@@ -166,24 +188,17 @@ public class Chef {
 		{
 			if(Active.getIngredients().get(i).getName().equals(item))
 			{
-				b=Active.getIngredients().get(i).getAmount();
 				return Active.getIngredients().get(i);
 			}
 		}
 		return Active.getIngredients().get(0);
 	}
-	private void FindRecipe(String Meal)
-	{
-		for(int i=0;i<RecipeBook.getBook().size();i++)
-		{
-			if(RecipeBook.getBook().get(i).getName().equals(Meal)) Active=RecipeBook.getBook().get(i); 
-		}
-	}
+	
 	public void putin(ArrayList<Machine> Machines)
 	{
 		status="putin";
 		Carrying.setAmount(0);
-		Gather=false;
+		Prepare=true;
 	}
 	public void make(ArrayList<Machine> Machines,RestaurantModel model,RestaurantView view)
 	{
@@ -192,23 +207,93 @@ public class Chef {
 		{
 			Machines.get(1).setview(view);
 			Machines.get(1).setTime(Active.getCookingTime());
-			Machines.get(1).run();	
+			Machines.get(1).run();
+			Serve=true;
+			Make=false;
 		}
 		else
 		{
 			Machines.get(0).setview(view);
-			Machines.get(0).setTime(Active.getCookingTime());
-			Machines.get(0).run();	
+			Machines.get(0).setTime(Active.getBakingTime());
+			Machines.get(0).run();
+			Serve=true;
+			Make=false;
 		}
 	}
 	public void serve(ArrayList<Machine> Machines,RestaurantModel model,RestaurantView view)
 	{
 		status="serve";
-		if(model.getAgPos(2).x==5)
+		if(model.getAgPos(2).x==6)
 		{
 			Machines.get(1).stop();
 			Machines.get(1).setStatus("Free");
 			view.update(model.getAgPos(2).x,model.getAgPos(2).y+1);
+			Order tmp=new Order();
+			tmp.setOrder(Active.getName(),Active.getOutput());
+			addLeftOver(tmp);
+			Serve=false;
+			Prepare=true;
+			FoundRecipe=false;
+		}
+		else
+		{
+			Machines.get(0).stop();
+			Machines.get(0).setStatus("Free");
+			view.update(model.getAgPos(2).x,model.getAgPos(2).y+1);
+			Order tmp=new Order();
+			tmp.setOrder(Active.getName(),Active.getOutput());
+			addLeftOver(tmp);
+			Serve=false;
+			Prepare=true;
+			FoundRecipe=false;
+		}
+	}
+	private Boolean Finished()
+	{
+		for(int i=0;i<Picked.getAmount().size();i++)
+		{
+			if(Picked.getAmount().get(0)>0)  return false;
+		}
+		CheckResources=true;
+		return true; 
+	}
+	private void Sumup()
+	{
+		for(int i=0;i<LeftOver.getOrders().size();i++)
+		{
+			for(int j=0;j<Picked.getOrders().size();j++)
+			{
+				if(LeftOver.getOrders().get(i).equals(Picked.getOrders().get(j)) && LeftOver.getAmount().get(i)>0)
+				{
+					if(LeftOver.getAmount().get(i)>=Picked.getAmount().get(j)) 
+						{
+							LeftOver.getAmount().set(i, LeftOver.getAmount().get(i)-Picked.getAmount().get(j));
+							Picked.getAmount().set(j, 0);
+						}
+					else 
+						{
+							Picked.getAmount().set(j, Picked.getAmount().get(j)-LeftOver.getAmount().get(i));
+							LeftOver.getAmount().set(i,0);
+						}
+				}
+			}
+		}
+		for(int i=0;i<Picked.getAmount().size();i++)
+		{
+			if(Picked.getAmount().get(i)==0) {Picked.removeOrder(i);bl=Picked.getOrders().get(i);}
+		}
+	}
+	private void addLeftOver(Order param)
+	{
+		for(int i=0;i<LeftOver.getOrders().size();i++)
+		{
+			for(int j=0;j<param.getOrders().size();j++)
+			{
+				if(LeftOver.getOrders().get(i).equals(param.getOrders().get(j)))
+				{
+					LeftOver.getAmount().set(i, LeftOver.getAmount().get(i)+param.getAmount().get(j));
+				}
+			}
 		}
 	}
 	public Integer getTargetx()
@@ -219,13 +304,9 @@ public class Chef {
 	{
 		return Carrying;
 	}
-	public Boolean getWork()
+	public Boolean getMake()
 	{
-		return Work;
-	}
-	public Boolean getWaiting()
-	{
-		return Waiting;
+		return Make;
 	}
 	public Boolean getProblem()
 	{
@@ -235,9 +316,28 @@ public class Chef {
 	{
 		return MoveTo;
 	}
-	public Boolean getGather()
+	public Boolean getPickUp()
 	{
-		return Gather;
+		return PickUp;
+	}
+	public Boolean getPrepare()
+	{
+		return Prepare;
+	}
+	public Boolean getServe()
+	{
+		return Serve;
+	}
+	public Boolean getPutIn()
+	{
+		return PutIn;
+	}
+	public Boolean getCheckResources() {
+		return CheckResources;
+	}
+	public Boolean getSumup()
+	{
+		return SumUp;
 	}
 
 }

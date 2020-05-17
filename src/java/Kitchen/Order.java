@@ -13,8 +13,20 @@ public class Order {
 	}
 	public void removeOrder(Integer place)
 	{
-		Orders.remove(place);
-		Amount.remove(place);
+		if(Orders.size()>=1)
+		{
+			for(int i=place;i<Orders.size()-1;i++)
+			{
+				Orders.set(place,Orders.get(place+1));
+				Amount.set(place,Amount.get(place+1));
+			}
+		}
+		else
+		{
+			Orders=null;
+			Amount=null;
+		}
+
 	}
 	public void setOrders(ArrayList<String> orders,ArrayList<Integer> amount)
 	{
