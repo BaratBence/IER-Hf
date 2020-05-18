@@ -6,7 +6,7 @@ public class Recipes {
 	public Recipes()
 	{
 		ArrayList<Ingredient> SoupA = new ArrayList<Ingredient>();
-		SoupA.add(new Ingredient("A",4,false));
+		SoupA.add(new Ingredient("A",4,true));
 		SoupA.add(new Ingredient("B",2,false));
 		SoupA.add(new Ingredient("C",3,false));
 		SoupA.add(new Ingredient("D",0,false));
@@ -40,7 +40,7 @@ public class Recipes {
 		DessertB.add(new Ingredient("B",2,false));
 		DessertB.add(new Ingredient("C",0,false));
 		DessertB.add(new Ingredient("D",2,false));
-		Book.add(new Recipe("DessertA",DessertB,false,0,false,0,3));
+		Book.add(new Recipe("DessertB",DessertB,false,0,false,0,3));
 	}
 	public ArrayList<Recipe> getBook()
 	{

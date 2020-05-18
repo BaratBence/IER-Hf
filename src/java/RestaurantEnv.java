@@ -36,6 +36,7 @@ public class RestaurantEnv extends Environment {
         Waiting.add(new Customers(100,100,4));
         Waiting.add(new Customers(100,100,4));
         Order tmp=new Order();
+        Order tmp1=new Order();
         //ArrayList<String> a= new ArrayList<String>();
         //a.add("MainB");
         //a.add("MainB");
@@ -45,6 +46,8 @@ public class RestaurantEnv extends Environment {
         //tmp.setOrders(a, b);
         tmp.setOrder("MainB", 1);
         Orders.add(tmp);
+        tmp1.setOrder("SoupB", 1);
+        Orders.add(tmp1);
         model.setView(view);
         updatePercepts();
     }
@@ -58,13 +61,13 @@ public class RestaurantEnv extends Environment {
             else if(action.getFunctor().equals("leadToTable")) {host.LeadToTable(tables,Waiting,model,view); }
             else if(action.getFunctor().equals("goBack")) {host.GetBack(model); }
             else if(action.getFunctor().equals("checkResources")) {chef.CheckResources(Storage,Orders); }
-            else if(action.getFunctor().equals("prepare")) {chef.Prepare(Storage); }
+            else if(action.getFunctor().equals("prepare")) {chef.Prepare(Storage,Orders,model.getAgPos(2).x); }
             else if(action.getFunctor().equals("moveTo")) {chef.moveTo(model,Machines); }
             else if(action.getFunctor().equals("pickUp")) {chef.pickUp(Storage,model,view,Machines); }
             else if(action.getFunctor().equals("putin")) {chef.putin(Machines); }
-            else if(action.getFunctor().equals("cooking")) {chef.make(Machines,model,view); }
-            else if(action.getFunctor().equals("baking")) {chef.make(Machines,model,view); }
+            else if(action.getFunctor().equals("making")) {chef.make(Machines,model,view); }
             else if(action.getFunctor().equals("serve")) {chef.serve(Machines,model,view);}
+            else if(action.getFunctor().equals("chopping")) {chef.Chopping(Machines);}
             else return false;
         } catch (Exception e) {}
         updatePercepts();
@@ -83,9 +86,8 @@ public class RestaurantEnv extends Environment {
         addPercept("host",Literal.parseLiteral("findtable("+ Waiting.size() +","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+")"));
         addPercept("host",Literal.parseLiteral("getTable("+ host.getIsFollowed() + ","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+ ")"));
         addPercept("host",Literal.parseLiteral("getBack("+ host.getBack() + ","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+ ")"));
-        addPercept("chef",Literal.parseLiteral("chefStatusTargetXCarried("+chef.status +","+chef.a+","+chef.b+","+chef.c+","+chef.d+")"));
-        addPercept("chef",Literal.parseLiteral("chopping("+ chef.getCarrying().getChopped()+")"));
-        addPercept("chef",Literal.parseLiteral("stateMachine("+Machines.get(1).getStatus()+","+Machines.get(0).getStatus()+","+ model.getAgPos(2).x+","+chef.TargetX+","+chef.getCheckResources()+","+chef.getPrepare()+","+chef.getMoveTo()+","+chef.getServe()+","+chef.getMake()+")"));
+        addPercept("chef",Literal.parseLiteral("stateMachine("+Orders.size()+","+Machines.get(1).getStatus()+","+Machines.get(0).getStatus()+","+ model.getAgPos(2).x+","+chef.TargetX+","
+        +chef.getCheckResources()+","+chef.getPrepare()+","+chef.getMoveTo()+","+chef.getChopped()+","+chef.getServe()+","+chef.getMake()+")"));
     }
 
     
