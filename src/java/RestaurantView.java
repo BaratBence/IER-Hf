@@ -33,7 +33,7 @@ class RestaurantView extends GridWorldView {
             case RestaurantEnv.MACHINE:
             	drawMachine(g,x,y);
             	break;
-            case RestaurantEnv.OBSTICLE:
+            case RestaurantEnv.OBSTACLE:
             	drawObst(g,x,y);
             	break;
             }
@@ -44,7 +44,7 @@ class RestaurantView extends GridWorldView {
             String label;
             c = Color.blue;
             super.drawAgent(g, x, y, c, 1);
-            if (id == 0) label="Waiter" ;
+            if (id == 0 || id==3) label="Waiter" ;
             else if(id == 1) label="Host";
             else label="Chef";
             g.setColor(Color.white);
@@ -61,8 +61,10 @@ class RestaurantView extends GridWorldView {
         		{ 
         			id=i+1; 
         			cost=tables.get(i).getCostumers();
-        			if(cost==null) status="free";
-        			else status = cost.getStatus();
+        			//if(cost==null) status="free";
+        			//else status = cost.getStatus();
+        			if(tables.get(i).getTaken()) status="taken";
+        			else status="free";
         		}
             g.setColor(Color.RED);
             drawString(g, x, y, defaultFont, "Table"+ id.toString()+ " " + status);

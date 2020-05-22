@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import Kitchen.Ingredient;
 import Kitchen.Order;
@@ -8,7 +9,6 @@ import Kitchen.Recipes;
 import jason.environment.grid.Location;
 
 public class Chef {
-	//states
 	private Boolean OrderFinished,FoundRecipe;
 	private ArrayList<Boolean> States=new ArrayList<Boolean>(Arrays.asList(true,false,false,false,false,false,false));
 	private Ingredient Carrying;
@@ -16,6 +16,7 @@ public class Chef {
 	private Recipes RecipeBook;
 	private Order Picked,Ready,LeftOver;
 	public Integer TargetX=0;
+	Logger logger = Logger.getLogger(RestaurantEnv.class.getName());
 	public Chef()
 	{
 		OrderFinished=false;
@@ -32,16 +33,38 @@ public class Chef {
 		LeftOver.setOrder("MainB", 0);
 		LeftOver.setOrder("DessertA", 0);
 		LeftOver.setOrder("DessertB", 0);
+		LeftOver.setOrder("DessertC", 0);
 	}
 	public void CheckResources(ArrayList<StorageBox> Storage,ArrayList<Order> Orders)
 	{
+		
+		Picked=Orders.get(0);
+		Sumup();
+		
+		States.set(1, sumIngredients(Storage));
+		
+		if(!States.get(1)) 
+			{
+				FoundRecipe=false;
+				States.set(2,true);
+				States.set(0, false);
+			}
+		else
+		{
+			FoundRecipe=false;
+			States.set(0,false);
+		}
+	}
+	private Boolean sumIngredients(ArrayList<StorageBox> Storage)
+	{
+		Integer counter=0;
+		
 		ArrayList<Ingredient> Required=new ArrayList<Ingredient>();
+		Boolean TooMuch=false;
 		Required.add(new Ingredient("A",0,false));
 		Required.add(new Ingredient("B",0,false));
 		Required.add(new Ingredient("C",0,false));
 		Required.add(new Ingredient("D",0,false));
-		Picked=Orders.get(0);
-		Sumup();
 		for(int i=0;i<Picked.getOrders().size();i++)
 		{
 			FindRecipe(Picked.getOrders().get(i));
@@ -51,28 +74,22 @@ public class Chef {
 				{
 					if(Required.get(h).getName().equals(Active.getIngredients().get(k).getName()))
 					{
-						Required.get(h).setAmount(Required.get(h).getAmount()+(Active.getIngredients().get(k).getAmount()*Picked.getAmount().get(i)));
+						
+						Required.get(h).setAmount(Required.get(h).getAmount()+Active.getIngredients().get(k).getAmount()*(int)(Math.ceil((double)Picked.getAmount().get(i)/(double)Active.getOutput())));
 					}
-				}
-					
-			}
-			
+				}	
+			}	
 		}
 		for(int i=0;i<Storage.size();i++)
 		{
 			for(int j=0;j<Required.size();j++)
 			{
-				if(Required.get(j).getName().equals(Storage.get(i).getIngredient().getName()) && Required.get(j).getAmount()>Storage.get(i).getIngredient().getAmount()) States.set(1,true);
+				if(Required.get(j).getName().equals(Storage.get(i).getIngredient().getName()) && Required.get(j).getAmount()>Storage.get(i).getIngredient().getAmount()) TooMuch=true;
 			}
 		}
+		return TooMuch;
 		
-		if(!States.get(1)) 
-			{
-				FoundRecipe=false;
-				States.set(2,true);
-				States.set(0, false);
-			}
-	}	
+	}
 	public void Prepare(ArrayList<StorageBox> Storage,ArrayList<Order> Orders,Integer x)
 	{
 		Sumup();
@@ -133,10 +150,16 @@ public class Chef {
 	}
 	private Boolean Finished()
 	{
+		if(Picked.getAmount().size()==0) 
+			{
+				logger.info("FINISHED PICKED");
+				return true;
+			}
 		for(int i=0;i<Picked.getAmount().size();i++)
 		{
 			if(Picked.getAmount().get(0)>0)  return false;
 		}
+		
 		return true; 
 	}
 	public void moveTo(RestaurantModel model,ArrayList<Machine> Machines)
@@ -248,33 +271,40 @@ public class Chef {
 	}
 	public void make(ArrayList<Machine> Machines,RestaurantModel model,RestaurantView view)
 	{
+		
 		if(model.getAgPos(2).x==6)
 		{
+			Machines.get(1).setWorking(true);
 			Machines.get(1).setview(view);
 			Machines.get(1).setTime(Active.getCookingTime());
 			Machines.get(1).run();
 		}
 		else if(model.getAgPos(2).x==5)
 		{
+			Machines.get(1).setWorking(false);
 			Machines.get(0).setview(view);
 			Machines.get(0).setTime(Active.getBakingTime());
 			Machines.get(0).run();
 		}
-		States.set(4,true);
 		States.set(5,false);
+		States.set(4,true);
+		
+		
 	}
 	public void serve(ArrayList<Machine> Machines,RestaurantModel model,RestaurantView view)
 	{
+		
+		FoundRecipe=false;
 		if(model.getAgPos(2).x==6)
 		{
-			Machines.get(1).stop();
+			Machines.get(1).setWorking(false);
 			Machines.get(1).setStatus("Free");
 			view.update(model.getAgPos(2).x,model.getAgPos(2).y+1);
 			
 		}
 		else if(model.getAgPos(2).x==5)
 		{
-			Machines.get(0).stop();
+			Machines.get(1).setWorking(false);
 			Machines.get(0).setStatus("Free");
 			view.update(model.getAgPos(2).x,model.getAgPos(2).y+1);
 		}
@@ -283,7 +313,6 @@ public class Chef {
 		addLeftOver(tmp);
 		States.set(4,false);
 		States.set(2,true);
-		FoundRecipe=false;
 	}
 	
 	private void Sumup()
@@ -309,7 +338,10 @@ public class Chef {
 		}
 		for(int i=0;i<Picked.getAmount().size();i++)
 		{
-			if(Picked.getAmount().get(i)==0) Picked.removeOrder(i);
+			if(Picked.getAmount().get(i)==0) 
+				{
+					Picked.removeOrder(i);
+				}
 		}
 	}
 	private void addLeftOver(Order param)
@@ -321,9 +353,45 @@ public class Chef {
 				if(LeftOver.getOrders().get(i).equals(param.getOrders().get(j)))
 				{
 					LeftOver.getAmount().set(i, LeftOver.getAmount().get(i)+param.getAmount().get(j));
+					logger.info("AddLeftOver:" + LeftOver.getAmount());
 				}
 			}
 		}
+	}
+	public void Problem(Order Preferences,ArrayList<StorageBox> Storage,ArrayList<Order> Orders) {
+		String type="",pickedType="";
+		Integer originalAmount=0;
+		for(int i=0;i<Preferences.getOrders().size();i++)
+		{
+			type=Preferences.getOrders().get(i);
+			type=type.substring(0,Preferences.getOrders().get(i).length()-1);
+			for(int j=0;j<Picked.getOrders().size();j++)
+			{
+				pickedType=Picked.getOrders().get(j);
+				pickedType=pickedType.substring(0,Picked.getOrders().get(j).length()-1);
+				if(type.equals(pickedType))
+				{
+					originalAmount=Picked.getAmount().get(j);
+					for(int count=1;count<originalAmount+1;count++)
+					{
+						Picked.getAmount().set(j,Picked.getAmount().get(j)-count);
+						Picked.setOrder(Preferences.getOrders().get(i), count);
+						if(!sumIngredients(Storage)) 
+							{
+								States.set(2, true);
+								States.set(1, false);
+								return;
+							}
+						else Picked.removeOrder(Picked.getOrders().size());
+					}
+					Picked.getAmount().set(j,originalAmount);
+				}
+			}
+		}
+		States.set(0, true);
+		Orders.remove(0);
+		
+		
 	}
 	public Integer getTargetx()
 	{
@@ -356,5 +424,6 @@ public class Chef {
 	public Boolean getCheckResources() {
 		return States.get(0);
 	}
+	
 
 }

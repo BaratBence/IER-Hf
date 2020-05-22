@@ -5,9 +5,11 @@ public class Machine extends Thread{
 	private int x,y;
 	private String status,Name;
 	private RestaurantView view;
+	private Boolean Working;
 	
 	public Machine(String name, int X,int Y)
 	{
+		Working=false;
 		Name=name;
 		x=X;
 		y=Y;
@@ -38,6 +40,14 @@ public class Machine extends Thread{
 	}
 	public Integer getY() {
 		return y;
+	}
+	public Boolean getWorking()
+	{
+		return Working;
+	}
+	public void setWorking(Boolean Wparam)
+	{
+		Working=Wparam;
 	}
 	public void run()
 	{

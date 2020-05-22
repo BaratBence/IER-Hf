@@ -33,7 +33,7 @@ public class Table
 	public Boolean getTaken() {
 		return taken;
 	}
-	public void serTaken(Boolean takenp) {
+	public void setTaken(Boolean takenp) {
 	    taken=takenp;
 	}
 	

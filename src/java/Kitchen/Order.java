@@ -1,7 +1,7 @@
 package Kitchen;
 
 import java.util.ArrayList;
-
+import java.util.logging.Logger;
 public class Order {
 	private ArrayList<String> Orders=new ArrayList<String>();
 	private ArrayList<Integer> Amount=new ArrayList<Integer>();
@@ -13,18 +13,21 @@ public class Order {
 	}
 	public void removeOrder(Integer place)
 	{
-		if(Orders.size()>=1)
+		
+		if(Orders.size()>1)
 		{
 			for(int i=place;i<Orders.size()-1;i++)
 			{
 				Orders.set(place,Orders.get(place+1));
 				Amount.set(place,Amount.get(place+1));
 			}
+			Orders.remove(Orders.size()-1);
+			Amount.remove(Amount.size()-1);
 		}
 		else
 		{
-			Orders=null;
-			Amount=null;
+			Orders=new ArrayList<String>();
+			Amount=new ArrayList<Integer>();
 		}
 
 	}
@@ -32,6 +35,10 @@ public class Order {
 	{
 		Orders.addAll(orders);
 		Amount.addAll(amount);
+	}
+	public void setPref(ArrayList<String> orders)
+	{
+		Orders.addAll(orders);
 	}
 	public void setFromX(Integer fromx)
 	{
