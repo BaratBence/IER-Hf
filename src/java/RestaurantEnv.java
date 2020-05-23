@@ -43,10 +43,10 @@ public class RestaurantEnv extends Environment {
         
         ArrayList<String> prefrencesNames=new ArrayList<String>(Arrays.asList("SoupA","DessertC","MainB","DessertB","SoupB","DessertA"));
         prefrences.setPref(prefrencesNames);
-        //Waiting.add(new Customers(100,100,4));
+        Waiting.add(new Customers(100,100,4));
         Waiting.add(new Customers(100,100,2));
         Waiting.add(new Customers(100,100,6));
-        Order tmp1=new Order();
+        /*Order tmp1=new Order();
         tmp1.setOrder("SoupA", 1);
         Orders.add(tmp1);
         Order tmp2=new Order();
@@ -74,7 +74,7 @@ public class RestaurantEnv extends Environment {
 
         Order tmp6=new Order();
         tmp6.setOrder("MainA", 4);
-        Orders.add(tmp6);
+        Orders.add(tmp6);*/
         model.setView(view);
         updatePercepts();
     }
@@ -103,17 +103,6 @@ public class RestaurantEnv extends Environment {
         updatePercepts();
         try {
             Thread.sleep(500);
-            Random rand = new Random(); 
-            int rand_int1 = rand.nextInt(100);
-            if(rand_int1>96) 
-            	{
-            		Waiting.add(new Customers(100,100,2));
-            	}
-            if(rand_int1>98)
-            {
-            	tables.get(0).setTaken(false);
-        		view.update(tables.get(0).getX(),tables.get(0).getY());
-            }
         } catch (Exception e) {}
         informAgsEnvironmentChanged();
         return true;

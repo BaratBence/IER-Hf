@@ -61,10 +61,8 @@ class RestaurantView extends GridWorldView {
         		{ 
         			id=i+1; 
         			cost=tables.get(i).getCostumers();
-        			//if(cost==null) status="free";
-        			//else status = cost.getStatus();
-        			if(tables.get(i).getTaken()) status="taken";
-        			else status="free";
+        			if(cost==null) status="free";
+        			else status = cost.getStatus();
         		}
             g.setColor(Color.RED);
             drawString(g, x, y, defaultFont, "Table"+ id.toString()+ " " + status);
