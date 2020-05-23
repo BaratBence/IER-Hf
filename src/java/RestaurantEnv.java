@@ -25,6 +25,7 @@ public class RestaurantEnv extends Environment {
     public ArrayList<StorageBox> Storage=new ArrayList<StorageBox>();
     public ArrayList<Machine> Machines=new ArrayList<Machine>();
     public ArrayList<Order> Orders=new ArrayList<Order>();
+    public ArrayList<Wall> Walls=new ArrayList<Wall>();
     
     private Order prefrences=new Order();
     private RestaurantModel model;
@@ -33,9 +34,11 @@ public class RestaurantEnv extends Environment {
     private Waiter waiter=new Waiter();
     private Chef chef=new Chef();
     public Boolean a=true;
+    
+    private int[] lastWaiterPos = {2,5};
     @Override
     public void init(String[] args) {
-        model = new RestaurantModel(RestaurantLength,RestaurantSize,WALL,TABLE,INGREDIENT,MACHINE,OBSTACLE,tables,Storage,Machines);
+        model = new RestaurantModel(RestaurantLength,RestaurantSize,WALL,TABLE,INGREDIENT,MACHINE,OBSTACLE,tables,Storage,Machines,Walls);
         view  = new RestaurantView(model,tables,Storage,Machines);
         
         ArrayList<String> prefrencesNames=new ArrayList<String>(Arrays.asList("SoupA","DessertC","MainB","DessertB","SoupB","DessertA"));
@@ -80,7 +83,9 @@ public class RestaurantEnv extends Environment {
     public boolean executeAction(String ag, Structure action) {
         logger.info(ag+" doing: "+ action);
         try {
-            if (action.getFunctor().equals("next")) { waiter.nextSlot(model); } 
+            if (action.getFunctor().equals("moveTowars")) { waiter.moveTowards(model, Walls, 
+            		Integer.parseInt(action.getTerm(0).toString()),
+            		Integer.parseInt(action.getTerm(1).toString())); }
             else if(action.getFunctor().equals("findtable")) { host.findTable(tables,Waiting); }
             else if(action.getFunctor().equals("leadToTable")) {host.LeadToTable(tables,Waiting,model,view); }
             else if(action.getFunctor().equals("goBack")) {host.GetBack(model); }
@@ -115,10 +120,19 @@ public class RestaurantEnv extends Environment {
     }
 
     void updatePercepts() {
-        clearAllPercepts();
+        //clearAllPercepts();
 
+        clearPercepts("host");
+        clearPercepts("chef");
+        
+
+        removePercept("waiter",Literal.parseLiteral("pos(waiter," + lastWaiterPos[0] + "," + lastWaiterPos[1] + ")"));
         addPercept("waiter",Literal.parseLiteral("pos(waiter," +model.getAgPos(0).x + "," + model.getAgPos(0).y + ")"));
-        addPercept("waiter",Literal.parseLiteral("pos(host," + model.getAgPos(1).x + "," + model.getAgPos(1).y + ")"));
+        lastWaiterPos[0] = model.getAgPos(0).x;
+        lastWaiterPos[1] = model.getAgPos(0).y;
+        
+        
+        //addPercept("waiter",Literal.parseLiteral("pos(host," + model.getAgPos(1).x + "," + model.getAgPos(1).y + ")"));
         addPercept("host",Literal.parseLiteral("findtable("+ Waiting.size() +","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+","+FreeTables()+")"));
         addPercept("host",Literal.parseLiteral("getTable("+ host.getIsFollowed() + ","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+ ")"));
         addPercept("host",Literal.parseLiteral("getBack("+ host.getBack() + ","+ model.getAgPos(1).x + "," + model.getAgPos(1).y+ ")"));

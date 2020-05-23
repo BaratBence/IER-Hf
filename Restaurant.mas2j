@@ -8,7 +8,7 @@ MAS restaurant {
     environment: RestaurantEnv
 
     agents:
-		chef; waiter; host;waiter1;
+		chef; waiter; host;
     
     aslSourcePath:
 		"src/asl";
