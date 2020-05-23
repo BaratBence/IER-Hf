@@ -83,7 +83,7 @@ public class RestaurantEnv extends Environment {
     public boolean executeAction(String ag, Structure action) {
         logger.info(ag+" doing: "+ action);
         try {
-            if (action.getFunctor().equals("moveTowars")) { waiter.moveTowards(model, Walls, 
+            if (action.getFunctor().equals("moveTowards")) { waiter.moveTowards(model, Walls, 
             		Integer.parseInt(action.getTerm(0).toString()),
             		Integer.parseInt(action.getTerm(1).toString())); }
             else if(action.getFunctor().equals("findtable")) { host.findTable(tables,Waiting); }

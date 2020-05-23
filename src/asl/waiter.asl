@@ -18,20 +18,21 @@ dest(corner2).
 /* Plans */
 
 //+!check(slots) : true <- next(slot); !check(slots).
-+pos(waiter,X1,Y1) : patrolling & not (dest(DESTTEST) & pos(DESTTEST,X1,Y1))
++pos(waiter,X1,Y1) : patrolling & X1 = 2 & Y1 = 5 & dest(corner1)
+	<-	+dest(corner2);
+		-dest(corner1).
++pos(waiter,X1,Y1) : patrolling & X1 = 6 & Y1 = 5 & dest(corner2)
+	<-	+dest(corner3);
+		-dest(corner2).
++pos(waiter,X1,Y1) : patrolling & X1 = 6 & Y1 = 11 & dest(corner3)
+	<-	+dest(corner4);
+		-dest(corner3).
++pos(waiter,X1,Y1) : patrolling & X1 = 2 & Y1 = 11 & dest(corner4)
+	<-	+dest(corner1);
+		-dest(corner4).
+
++pos(waiter,X1,Y1) : patrolling & not (pos(DESTTEST,X1,Y1) & dest(DESTTEST))
 	<-	?dest(DEST)
 		?pos(DEST,DESTX,DESTY)
 		moveTowards(DESTX,DESTY).
 
-+pos(waiter,X1,Y1) : patrolling & X1 = 2 & Y1 = 5
-	<-	-dest(corner1);
-		+dest(corner2).
-+pos(waiter,X1,Y1) : patrolling & X1 = 6 & Y1 = 5
-	<-	-dest(corner2);
-		+dest(corner3).
-+pos(waiter,X1,Y1) : patrolling & X1 = 6 & Y1 = 11
-	<-	-dest(corner3);
-		+dest(corner4).
-+pos(waiter,X1,Y1) : patrolling & X1 = 2 & Y1 = 11
-	<-	-dest(corner4);
-		+dest(corner3).
