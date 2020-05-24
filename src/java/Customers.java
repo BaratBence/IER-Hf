@@ -1,23 +1,17 @@
 public class Customers
 {
-	private Integer Ordertime,Eatingtime,People;
-	public Customers(Integer ordertime,Integer eatingtime,Integer people)
+	private Integer Eatingtime,People;
+	public Customers(int eatingtime, int people)
 	{
-		Ordertime=ordertime;
 		Eatingtime=eatingtime;
 		People=people;
 	}
 	
 	private String status="Taken";
+	
 	public void Ordering()
 	{
-		try {
-			Thread.sleep(Ordertime);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		status="Order";
+		status="Ordered";
 	}
 	public Integer getPeople()
 	{
@@ -25,21 +19,16 @@ public class Customers
 	}
 	public void OrderTaken()
 	{
-		status="Ordered";
-	}
-	public String getStatus()
-	{
-		return status;
-	}
-	public void Eating()
-	{
+		status="Eating";
 		try {
-			if(status.equals("Eating"))
 			Thread.sleep(Eatingtime);
-			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public String getStatus()
+	{
+		return status;
 	}
 }

@@ -43,9 +43,9 @@ public class RestaurantEnv extends Environment {
         
         ArrayList<String> prefrencesNames=new ArrayList<String>(Arrays.asList("SoupA","DessertC","MainB","DessertB","SoupB","DessertA"));
         prefrences.setPref(prefrencesNames);
-        Waiting.add(new Customers(100,100,4));
-        Waiting.add(new Customers(100,100,2));
-        Waiting.add(new Customers(100,100,6));
+        Waiting.add(new Customers(100,4));
+        Waiting.add(new Customers(100,2));
+        Waiting.add(new Customers(100,6));
         /*Order tmp1=new Order();
         tmp1.setOrder("SoupA", 1);
         Orders.add(tmp1);
@@ -86,6 +86,7 @@ public class RestaurantEnv extends Environment {
             if (action.getFunctor().equals("moveTowards")) { waiter.moveTowards(model, Walls, 
             		Integer.parseInt(action.getTerm(0).toString()),
             		Integer.parseInt(action.getTerm(1).toString())); }
+            else if(action.getFunctor().equals("checkOrders")) { }
             else if(action.getFunctor().equals("findtable")) { host.findTable(tables,Waiting); }
             else if(action.getFunctor().equals("leadToTable")) {host.LeadToTable(tables,Waiting,model,view); }
             else if(action.getFunctor().equals("goBack")) {host.GetBack(model); }
