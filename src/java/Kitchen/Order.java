@@ -6,11 +6,21 @@ public class Order {
 	private ArrayList<String> Orders=new ArrayList<String>();
 	private ArrayList<Integer> Amount=new ArrayList<Integer>();
 	private Integer fromX,fromY;
+	private Boolean success = true;
 	public void setOrder(String order,Integer amount)
 	{
 		Orders.add(order);
 		Amount.add(amount);
 	}
+	public void setSuccess(Boolean succ)
+	{
+		success = succ;
+	}
+	public Boolean getSuccess()
+	{
+		return success;
+	}
+	
 	public void removeOrder(Integer place)
 	{
 		

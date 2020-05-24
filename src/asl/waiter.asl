@@ -79,8 +79,7 @@ dest(6,5).
 		+returnpoint(X1,Y1);
 		+dest(8,2).
 +pos(waiter,X1,Y1) : takingorder & dest(X1,Y1)
-	<-	?order(XX,YY);
-		putOrder(XX,YY);
+	<-	putOrder;
 		-dest(X1,Y1);
 		-takingorder;
 		+returning;
@@ -88,14 +87,12 @@ dest(6,5).
 		+dest(RETX,RETY).
 +pos(waiter,X1,Y1) : serving & dest(X1,Y1) & ordertoserve(X1-1,YY,success)
 	<-	serveOrder(X1-1,YY,success);
-		-ordertoserve(X1-1,YY,success);
 		-serving;
 		+checkingorders;
 		-dest(X1,Y1);
 		+dest(8,2).
 +pos(waiter,X1,Y1) : serving & dest(X1,Y1) & ordertoserve(X1-1,YY,failure)
-	<-	retakeOrder;
-		-ordertoserve(X1-1,YY,failure);
+	<-	sendpplhome;
 		-serving.
 -odertoserve(XX,YY,failure) : order(XX,YY)
 	<-	+takingorder;
@@ -107,9 +104,4 @@ dest(6,5).
 		?dest(DESTX,DESTY);
 		-dest(DESTX,DESTY);
 		+dest(8,2).
-/*TODO:
-	-takeOrder
-	-putOrder
-	-checkOrders
-	-serveOrder
-	-retakeOrder*/		
+	

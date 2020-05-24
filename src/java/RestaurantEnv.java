@@ -25,6 +25,7 @@ public class RestaurantEnv extends Environment {
     public ArrayList<StorageBox> Storage=new ArrayList<StorageBox>();
     public ArrayList<Machine> Machines=new ArrayList<Machine>();
     public ArrayList<Order> Orders=new ArrayList<Order>();
+    public ArrayList<Order> Ready=new ArrayList<Order>();
     public ArrayList<Wall> Walls=new ArrayList<Wall>();
     
     private Order prefrences=new Order();
@@ -86,11 +87,77 @@ public class RestaurantEnv extends Environment {
             if (action.getFunctor().equals("moveTowards")) { waiter.moveTowards(model, Walls, 
             		Integer.parseInt(action.getTerm(0).toString()),
             		Integer.parseInt(action.getTerm(1).toString())); }
-            else if(action.getFunctor().equals("checkOrders")) { }
-            else if(action.getFunctor().equals("takeOrder")) { }
-            else if(action.getFunctor().equals("putOrder")) { }
-            else if(action.getFunctor().equals("serveOrder")) { }
-            else if(action.getFunctor().equals("retakeOrder")) { }
+            else if(action.getFunctor().equals("checkOrders")){
+            	if(Ready.size() > 0)
+            	{
+            		Order currentOrder = Ready.remove(0);
+            		waiter.OrderToServe(currentOrder);
+            		int orderx = currentOrder.getFromX();
+            		int ordery = currentOrder.getFromY();
+            		if(currentOrder.getSuccess())
+            			addPercept("waiter",Literal.parseLiteral("ordertoserve(" + orderx + "," + ordery + ",success" + ")"));
+            		else
+            			addPercept("waiter",Literal.parseLiteral("ordertoserve(" + orderx + "," + ordery + ",failure" + ")"));
+            	}
+            }
+            else if(action.getFunctor().equals("takeOrder")) {
+            	int waiterx = model.getAgPos(0).x;
+            	int waitery = model.getAgPos(0).y;
+            	for(int i = 0; i < tables.size(); ++i)
+            	{
+            		Table currentTable = tables.get(i);
+            		int tablex = currentTable.getX();
+            		int tabley = currentTable.getY();
+            		if(tabley == waitery && ((waiterx - tablex) == 1 || (waiterx - tablex) == -1) && currentTable.getTaken())
+            		{
+            			Customers currentCu = currentTable.getCustomers();
+            			if(currentCu.getStatus() == "Taken")
+            			{
+            				waiter.OrderToTake(currentCu.GetPreferences(),tablex,tabley);
+            				currentCu.Ordering();
+            				addPercept("waiter",Literal.parseLiteral("order(" + tablex + "," + tabley + ")"));
+            				break;
+            			}
+            		}
+            	}
+            }
+            else if(action.getFunctor().equals("putOrder")) {
+            	Order toPut = waiter.GetOrderToTake();
+            	Orders.add(toPut);
+            	int ordx = toPut.getFromX();
+            	int ordy = toPut.getFromY();
+            	removePercept("waiter",Literal.parseLiteral("order(" + ordx + "," + ordy + ")"));
+            }
+            else if(action.getFunctor().equals("serveOrder")) {
+            	Order toServe = waiter.GetOrderToServe();
+            	int posx = toServe.getFromX();
+            	int posy = toServe.getFromY();
+            	for(int i = 0; i < tables.size(); ++i)
+            	{
+            		Table currentTable = tables.get(i);
+            		if(currentTable.getX() == posx && currentTable.getY() == posy && currentTable.getTaken())
+            		{
+            			currentTable.getCustomers().Served();
+            			removePercept("waiter",Literal.parseLiteral("ordertoserve(" + posx + "," + posy + ",success)"));
+            			break;
+            		}
+            	}
+            }
+            else if(action.getFunctor().equals("sendpplhome")) {
+            	Order failedOrder = waiter.GetOrderToServe();
+            	int posx = failedOrder.getFromX();
+            	int posy = failedOrder.getFromY();
+            	for(int i = 0; i < tables.size(); ++i)
+            	{
+            		Table currentTable = tables.get(i);
+            		if(currentTable.getX() == posx && currentTable.getY() == posy && currentTable.getTaken())
+            		{
+            			currentTable.getCustomers().Finished();
+            			removePercept("waiter",Literal.parseLiteral("ordertoserve(" + posx + "," + posy + ",failure)"));
+            			break;
+            		}
+            	}
+            }
             else if(action.getFunctor().equals("findtable")) { host.findTable(tables,Waiting); }
             else if(action.getFunctor().equals("leadToTable")) {host.LeadToTable(tables,Waiting,model,view); }
             else if(action.getFunctor().equals("goBack")) {host.GetBack(model); }
@@ -134,6 +201,15 @@ public class RestaurantEnv extends Environment {
         		{
         			addPercept("waiter",Literal.parseLiteral("newcustomer"));
         			foundOne = true;
+        		}
+        	}
+        	if(currentTable.getTaken())
+        	{
+        		if(currentTable.getCustomers().FinishedYet())
+        		{
+        			currentTable.setCostumers(null);
+        			currentTable.setTaken(false);
+        			view.update(currentx, currenty);
         		}
         	}
         }

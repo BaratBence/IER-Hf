@@ -1,28 +1,40 @@
 import java.util.ArrayList;
 
+import Kitchen.Order;
 import jason.environment.grid.Location;
 
 public class Waiter
-{
-	 public void nextSlot(RestaurantModel model) throws Exception {
-         Location r1 = model.getAgPos(0);
-         r1.x++;
-         if (r1.x == model.getWidth()) {
-             r1.x = 0;
-             r1.y++;
-         }
-         if (r1.y == model.getHeight()) {
-             return;
-         }
-         model.setAgPos(0, r1);
-         model.setAgPos(1, model.getAgPos(1)); 
-     }
-	 
-	 public void moveTowards(RestaurantModel model, ArrayList<Wall> Walls, int x, int y)
-	 {
+{	 
+	private Order orderToTake, orderToServe;
+	
+	public void OrderToServe(Order ord)
+	{
+		orderToServe = ord;
+	}
+	public void OrderToTake(Order ord, int x, int y)
+	{
+		orderToTake = ord;
+		orderToTake.setFromX(x);
+		orderToTake.setFromY(y);
+	}
+	public Order GetOrderToServe()
+	{
+		return orderToServe;
+	}
+	public Order GetOrderToTake()
+	{
+		return orderToTake;
+	}
+	public void PutOrder(ArrayList<Order> to)
+	{
+		
+	}
+	
+	public void moveTowards(RestaurantModel model, ArrayList<Wall> Walls, int x, int y)
+	{
 		 Location waiter = model.getAgPos(0);
 		 
-		 //if(waiter.x == x && waiter.y == y)return;
+		 if(waiter.x == x && waiter.y == y)return;
 		 
 		 Boolean up = false;
 		 Boolean right = false;
@@ -45,24 +57,56 @@ public class Waiter
 			 if(current.x == waiter.x && current.y == waiter.y + 1) downBlock = true;
 			 if(current.x == waiter.x && current.y == waiter.y - 1) upBlock = true;
 		 }
-		 
-		 if(up)
-		 {
-			 if(!upBlock && !stayY) model.setAgPos(0,waiter.x,waiter.y-1);
+		 if(x % 2 == 1)
+		 { 
+			 if(up)
+			 {
+				 if(!upBlock && !stayY) model.setAgPos(0,waiter.x,waiter.y-1);
+				 else
+				 {
+					 if(right && !rightBlock && !stayX) model.setAgPos(0,waiter.x+1,waiter.y);
+					 else if(!right && !leftBlock && !stayX) model.setAgPos(0, waiter.x-1, waiter.y);
+				 }
+			 }
 			 else
 			 {
-				 if(right && !rightBlock && !stayX) model.setAgPos(0,waiter.x+1,waiter.y);
-				 else if(!right && !leftBlock && !stayX) model.setAgPos(0, waiter.x-1, waiter.y);
+				 if(!downBlock && !stayY) model.setAgPos(0,waiter.x,waiter.y+1);
+				 else
+				 {
+					 if(right && !rightBlock && !stayX) model.setAgPos(0,waiter.x+1,waiter.y);
+					 else if(!right && !leftBlock && !stayX) model.setAgPos(0, waiter.x-1, waiter.y);
+				 }
 			 }
 		 }
 		 else
-		 {
-			 if(!downBlock && !stayY) model.setAgPos(0,waiter.x,waiter.y+1);
+		 { 
+			 if(right)
+			 {
+				 if(!rightBlock && !stayX) model.setAgPos(0,waiter.x+1,waiter.y);
+				 else
+				 {
+					 if(up && !upBlock && !stayY) model.setAgPos(0,waiter.x,waiter.y-1);
+					 else if(!up && !downBlock && !stayY) model.setAgPos(0, waiter.x, waiter.y+1);
+				 }
+			 }
 			 else
 			 {
-				 if(right && !rightBlock && !stayX) model.setAgPos(0,waiter.x+1,waiter.y);
-				 else if(!right && !leftBlock && !stayX) model.setAgPos(0, waiter.x-1, waiter.y);
+				 if(!leftBlock && !stayX) model.setAgPos(0,waiter.x-1,waiter.y);
+				 else
+				 {
+					 if(up && !upBlock && !stayY) model.setAgPos(0,waiter.x,waiter.y-1);
+					 else if(!up && !downBlock && !stayY) model.setAgPos(0, waiter.x, waiter.y+1);
+				 }
 			 }
 		 }
-	 }
+	}
+	 
+	public void CheckOrders(Order ord)
+	{
+		if(ord != null)
+		{
+			orderToTake = ord;
+			 
+		}
+	}
 }

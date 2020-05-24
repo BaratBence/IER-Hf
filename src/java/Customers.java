@@ -1,16 +1,19 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+import Kitchen.Order;
+
 public class Customers
 {
 	private Integer Eatingtime,People;
-	private ArrayList<String> preferences;
+	private Order preferences;
+	private Boolean finished = false;
 	
 	public Customers(int eatingtime, int people)
 	{
 		Eatingtime=eatingtime;
 		People=people;
-		preferences = new ArrayList<String>();
+		preferences = new Order();
 		ArrayList<String> temp = new ArrayList<String>();
 		temp.add("SoupA");
 		temp.add("SoupB");
@@ -22,11 +25,11 @@ public class Customers
 		for(int i = temp.size(); i > 0; --i)
 		{
 			Random rand = new Random();
-			preferences.add(temp.remove(rand.nextInt(i)));
+			preferences.setOrder(temp.remove(rand.nextInt(i)),People);
 		}
 	}
 	
-	public ArrayList<String> GetPreferences()
+	public Order GetPreferences()
 	{
 		return preferences;
 	}
@@ -41,7 +44,7 @@ public class Customers
 	{
 		return People;
 	}
-	public void OrderTaken()
+	public void Served()
 	{
 		status="Eating";
 		try {
@@ -50,9 +53,18 @@ public class Customers
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Finished();
 	}
 	public String getStatus()
 	{
 		return status;
+	}
+	public void Finished()
+	{
+		finished = true;
+	}
+	public Boolean FinishedYet()
+	{
+		return finished;
 	}
 }
