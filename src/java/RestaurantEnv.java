@@ -127,10 +127,14 @@ public class RestaurantEnv extends Environment {
         	Table currentTable = tables.get(i);
         	int currentx = currentTable.getX();
         	int currenty = currentTable.getY();
-        	if((currentx == waiterx + 1 || currentx == waiterx - 1) && waitery == currenty && !foundOne)
+        	if((currentx == waiterx + 1 || currentx == waiterx - 1) && waitery == currenty && !foundOne && currentTable.getTaken())
         	{
-        		addPercept("waiter",Literal.parseLiteral("newcustomer"));
-        		foundOne = true;
+        		Customers currentCustomer = currentTable.getCustomers();
+        		if(currentCustomer.getStatus() == "Taken")
+        		{
+        			addPercept("waiter",Literal.parseLiteral("newcustomer"));
+        			foundOne = true;
+        		}
         	}
         }
         if(!foundOne)removePercept("waiter",Literal.parseLiteral("newcustomer"));
