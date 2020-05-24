@@ -87,6 +87,10 @@ public class RestaurantEnv extends Environment {
             		Integer.parseInt(action.getTerm(0).toString()),
             		Integer.parseInt(action.getTerm(1).toString())); }
             else if(action.getFunctor().equals("checkOrders")) { }
+            else if(action.getFunctor().equals("takeOrder")) { }
+            else if(action.getFunctor().equals("putOrder")) { }
+            else if(action.getFunctor().equals("serveOrder")) { }
+            else if(action.getFunctor().equals("retakeOrder")) { }
             else if(action.getFunctor().equals("findtable")) { host.findTable(tables,Waiting); }
             else if(action.getFunctor().equals("leadToTable")) {host.LeadToTable(tables,Waiting,model,view); }
             else if(action.getFunctor().equals("goBack")) {host.GetBack(model); }
@@ -115,11 +119,25 @@ public class RestaurantEnv extends Environment {
         clearPercepts("host");
         clearPercepts("chef");
         
-
+        int waiterx = model.getAgPos(0).x;
+        int waitery = model.getAgPos(0).y;
+        Boolean foundOne = false;
+        for(int i = 0; i < tables.size(); ++i)
+        {
+        	Table currentTable = tables.get(i);
+        	int currentx = currentTable.getX();
+        	int currenty = currentTable.getY();
+        	if((currentx == waiterx + 1 || currentx == waiterx - 1) && waitery == currenty && !foundOne)
+        	{
+        		addPercept("waiter",Literal.parseLiteral("newcustomer"));
+        		foundOne = true;
+        	}
+        }
+        if(!foundOne)removePercept("waiter",Literal.parseLiteral("newcustomer"));
         removePercept("waiter",Literal.parseLiteral("pos(waiter," + lastWaiterPos[0] + "," + lastWaiterPos[1] + ")"));
-        addPercept("waiter",Literal.parseLiteral("pos(waiter," +model.getAgPos(0).x + "," + model.getAgPos(0).y + ")"));
-        lastWaiterPos[0] = model.getAgPos(0).x;
-        lastWaiterPos[1] = model.getAgPos(0).y;
+        addPercept("waiter",Literal.parseLiteral("pos(waiter," + waiterx + "," + waitery + ")"));
+        lastWaiterPos[0] = waiterx;
+        lastWaiterPos[1] = waitery;
         
         
         //addPercept("waiter",Literal.parseLiteral("pos(host," + model.getAgPos(1).x + "," + model.getAgPos(1).y + ")"));

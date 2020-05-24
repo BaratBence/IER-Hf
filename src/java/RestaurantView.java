@@ -60,7 +60,7 @@ class RestaurantView extends GridWorldView {
         		if(tables.get(i).getX() == x && tables.get(i).getY() == y) 
         		{ 
         			id=i+1; 
-        			cost=tables.get(i).getCostumers();
+        			cost=tables.get(i).getCustomers();
         			if(cost==null) status="free";
         			else status = cost.getStatus();
         		}

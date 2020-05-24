@@ -17,7 +17,7 @@ public class Table
 	{
 		cost=costp;
 	}
-	public Customers getCostumers()
+	public Customers getCustomers()
 	{
 		return cost;
 	}
