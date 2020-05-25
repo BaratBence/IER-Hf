@@ -55,10 +55,10 @@ public class RestaurantModel extends GridWorldModel {
             Walls.add(new Wall(6,3));
             Machines.add(new Machine("Oven",5,3));
             Machines.add(new Machine("Stove",6,3));
-            Storage.add(new StorageBox(1,3,new Ingredient("A",33,false)));
-            Storage.add(new StorageBox(2,3,new Ingredient("B",33,false)));
-            Storage.add(new StorageBox(3,3,new Ingredient("C",29,false)));
-            Storage.add(new StorageBox(4,3,new Ingredient("D",24,false)));
+            Storage.add(new StorageBox(1,3,new Ingredient("A",50,false)));
+            Storage.add(new StorageBox(2,3,new Ingredient("B",50,false)));
+            Storage.add(new StorageBox(3,3,new Ingredient("C",50,false)));
+            Storage.add(new StorageBox(4,3,new Ingredient("D",50,false)));
             Walls.add(new Wall(1,3));
             Walls.add(new Wall(2,3));
             Walls.add(new Wall(3,3));

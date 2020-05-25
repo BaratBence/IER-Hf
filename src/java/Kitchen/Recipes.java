@@ -46,7 +46,7 @@ public class Recipes {
 		DessertC.add(new Ingredient("B",0,false));
 		DessertC.add(new Ingredient("C",1,false));
 		DessertC.add(new Ingredient("D",2,false));
-		Book.add(new Recipe("DessertC",DessertC,false,0,false,0,1));
+		Book.add(new Recipe("DessertC",DessertC,false,0,false,0,3));
 	}
 	public ArrayList<Recipe> getBook()
 	{

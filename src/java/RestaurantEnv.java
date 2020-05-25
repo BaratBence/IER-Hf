@@ -42,40 +42,9 @@ public class RestaurantEnv extends Environment {
         model = new RestaurantModel(RestaurantLength,RestaurantSize,WALL,TABLE,INGREDIENT,MACHINE,OBSTACLE,tables,Storage,Machines,Walls);
         view  = new RestaurantView(model,tables,Storage,Machines);
         
-        ArrayList<String> prefrencesNames=new ArrayList<String>(Arrays.asList("SoupA","DessertC","MainB","DessertB","SoupB","DessertA"));
-        prefrences.setPref(prefrencesNames);
         Waiting.add(new Customers(100,4));
         Waiting.add(new Customers(100,2));
         Waiting.add(new Customers(100,6));
-        /*Order tmp1=new Order();
-        tmp1.setOrder("SoupA", 1);
-        Orders.add(tmp1);
-        Order tmp2=new Order();
-        ArrayList<String> tmp2Order= new ArrayList<String>();
-        tmp2Order.add("SoupA");
-        tmp2Order.add("SoupB");
-        ArrayList<Integer>tmp2Amount=new ArrayList<Integer>();
-        tmp2Amount.add(1);
-        tmp2Amount.add(8);
-        tmp2.setOrders(tmp2Order, tmp2Amount);
-        Orders.add(tmp2);
-        Order tmp3=new Order();
-        tmp3.setOrder("MainB", 6);
-        Orders.add(tmp3);
-        Order tmp4=new Order();
-        ArrayList<String> tmp4Order= new ArrayList<String>(Arrays.asList("DessertA","DessertC"));
-        ArrayList<Integer>tmp4Amount=new ArrayList<Integer>(Arrays.asList(1,1));
-        tmp4.setOrders(tmp4Order, tmp4Amount);
-        Orders.add(tmp4);
-        Order tmp5=new Order();
-        ArrayList<String> tmp5Order= new ArrayList<String>(Arrays.asList("SoupA","MainA","DessertB"));
-        ArrayList<Integer>tmp5Amount=new ArrayList<Integer>(Arrays.asList(2,3,3));
-        tmp5.setOrders(tmp5Order, tmp5Amount);
-        Orders.add(tmp5);
-
-        Order tmp6=new Order();
-        tmp6.setOrder("MainA", 4);
-        Orders.add(tmp6);*/
         model.setView(view);
         updatePercepts();
     }
@@ -162,14 +131,14 @@ public class RestaurantEnv extends Environment {
             else if(action.getFunctor().equals("leadToTable")) {host.LeadToTable(tables,Waiting,model,view); }
             else if(action.getFunctor().equals("goBack")) {host.GetBack(model); }
             else if(action.getFunctor().equals("checkResources")) {chef.CheckResources(Storage,Orders); }
-            else if(action.getFunctor().equals("prepare")) {chef.Prepare(Storage,Orders,model.getAgPos(2).x); }
+            else if(action.getFunctor().equals("prepare")) {chef.Prepare(Storage,Orders,model.getAgPos(2).x,Ready); }
             else if(action.getFunctor().equals("moveTo")) {chef.moveTo(model,Machines); }
             else if(action.getFunctor().equals("pickUp")) {chef.pickUp(Storage,model,view,Machines); }
             else if(action.getFunctor().equals("putin")) {chef.putin(Machines); }
             else if(action.getFunctor().equals("making")) {chef.make(Machines,model,view); }
             else if(action.getFunctor().equals("serve")) {chef.serve(Machines,model,view);}
             else if(action.getFunctor().equals("chopping")) {chef.Chopping(Machines);}
-            else if(action.getFunctor().equals("problem")) {chef.Problem(prefrences,Storage,Orders);}
+            else if(action.getFunctor().equals("problem")) {chef.Problem(Storage,Orders,Ready);}
             else return false;
         } catch (Exception e) {}
         updatePercepts();

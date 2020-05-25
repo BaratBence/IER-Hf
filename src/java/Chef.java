@@ -14,16 +14,16 @@ public class Chef {
 	private Ingredient Carrying;
 	private Recipe Active;
 	private Recipes RecipeBook;
-	private Order Picked,Ready,LeftOver;
+	private Order Picked,LeftOver,Pref;
 	public Integer TargetX=0;
 	Logger logger = Logger.getLogger(RestaurantEnv.class.getName());
 	public Chef()
 	{
 		OrderFinished=false;
+		Pref=new Order();
 		Picked=new Order();
 		LeftOver=new Order();
 		FoundRecipe=false;
-		Ready=new Order();
 		Carrying=new Ingredient("",0,false);
 		Active=new Recipe("",null,false,0,false,0,0);
 		RecipeBook=new Recipes();
@@ -37,9 +37,52 @@ public class Chef {
 	}
 	public void CheckResources(ArrayList<StorageBox> Storage,ArrayList<Order> Orders)
 	{
-		
-		Picked=Orders.get(0);
+		Pref=Orders.get(0);
+		Boolean hasone=false;
 		Sumup();
+		for(int i=0;i<Pref.getOrders().size();i++)
+		{
+			if(Pref.getOrders().get(i).contains("Soup"))
+			{
+				if(Picked.getOrders().size()==0) Picked.setOrder(Pref.getOrders().get(i), Pref.getAmount().get(i));
+				else
+				{
+					for(int j=0;j<Picked.getOrders().size();j++) if(Picked.getOrders().get(j).contains("Soup")) hasone=true;
+					if(!hasone) Picked.setOrder(Pref.getOrders().get(i), Pref.getAmount().get(i));
+					hasone=false;
+				}
+			}
+			else if(Pref.getOrders().get(i).contains("Main"))
+			{
+				if(Picked.getOrders().size()==0) Picked.setOrder(Pref.getOrders().get(i), Pref.getAmount().get(i));
+				else
+				{
+					for(int j=0;j<Picked.getOrders().size();j++) if(Picked.getOrders().get(j).contains("Main")) hasone=true;
+					if(!hasone) Picked.setOrder(Pref.getOrders().get(i), Pref.getAmount().get(i));
+					hasone=false;
+				}
+			}
+			else if(Pref.getOrders().get(i).contains("Dessert"))
+			{
+				if(Picked.getOrders().size()==0) Picked.setOrder(Pref.getOrders().get(i), Pref.getAmount().get(i));
+				else
+				{
+					for(int j=0;j<Picked.getOrders().size();j++) if(Picked.getOrders().get(j).contains("Dessert")) hasone=true;
+					if(!hasone) Picked.setOrder(Pref.getOrders().get(i), Pref.getAmount().get(i));
+					hasone=false;
+				}
+			}
+		}
+		for(int i=0;i<Picked.getOrders().size();i++)
+			for(int j=0;j<Pref.getOrders().size();j++)
+			{
+				if(Picked.getOrders().get(i).equals(Pref.getOrders().get(j)))
+				{
+					Pref.getAmount().remove(j);
+					Pref.getOrders().remove(j);
+					j--;
+				}
+			}
 		
 		States.set(1, sumIngredients(Storage));
 		
@@ -57,15 +100,14 @@ public class Chef {
 	}
 	private Boolean sumIngredients(ArrayList<StorageBox> Storage)
 	{
-		Integer counter=0;
-		
 		ArrayList<Ingredient> Required=new ArrayList<Ingredient>();
 		Boolean TooMuch=false;
 		Required.add(new Ingredient("A",0,false));
 		Required.add(new Ingredient("B",0,false));
 		Required.add(new Ingredient("C",0,false));
 		Required.add(new Ingredient("D",0,false));
-		for(int i=0;i<Picked.getOrders().size();i++)
+		
+		for(int i=0;i<Picked.getAmount().size();i++)
 		{
 			FindRecipe(Picked.getOrders().get(i));
 			for(int k=0;k<Active.getIngredients().size();k++)
@@ -74,7 +116,6 @@ public class Chef {
 				{
 					if(Required.get(h).getName().equals(Active.getIngredients().get(k).getName()))
 					{
-						
 						Required.get(h).setAmount(Required.get(h).getAmount()+Active.getIngredients().get(k).getAmount()*(int)(Math.ceil((double)Picked.getAmount().get(i)/(double)Active.getOutput())));
 					}
 				}	
@@ -87,15 +128,18 @@ public class Chef {
 				if(Required.get(j).getName().equals(Storage.get(i).getIngredient().getName()) && Required.get(j).getAmount()>Storage.get(i).getIngredient().getAmount()) TooMuch=true;
 			}
 		}
+		
+		logger.info("name: "+Picked.getOrders() + " " + Picked.getAmount() + " " +Required.get(0).getAmount()+ " " + Required.get(1).getAmount() 
+				+ " " + Required.get(2).getAmount() + " " + Required.get(3).getAmount());
 		return TooMuch;
 		
 	}
-	public void Prepare(ArrayList<StorageBox> Storage,ArrayList<Order> Orders,Integer x)
+	public void Prepare(ArrayList<StorageBox> Storage,ArrayList<Order> Orders,Integer x,ArrayList<Order> Ready)
 	{
 		Sumup();
 		if(Finished()) 
 			{
-				Ready=Orders.get(0);
+				Ready.add(Orders.get(0));
 				Orders.remove(0);
 				if(x==6)
 				{
@@ -358,40 +402,33 @@ public class Chef {
 			}
 		}
 	}
-	public void Problem(Order Preferences,ArrayList<StorageBox> Storage,ArrayList<Order> Orders) {
+	public void Problem(ArrayList<StorageBox> Storage,ArrayList<Order> Orders,ArrayList<Order> Ready) {
 		String type="",pickedType="";
-		Integer originalAmount=0;
-		for(int i=0;i<Preferences.getOrders().size();i++)
+		for(int i=0;i<Pref.getOrders().size();i++)
 		{
-			type=Preferences.getOrders().get(i);
-			type=type.substring(0,Preferences.getOrders().get(i).length()-1);
+			type=Pref.getOrders().get(i);
+			type=type.substring(0,Pref.getOrders().get(i).length()-1);
 			for(int j=0;j<Picked.getOrders().size();j++)
 			{
 				pickedType=Picked.getOrders().get(j);
 				pickedType=pickedType.substring(0,Picked.getOrders().get(j).length()-1);
 				if(type.equals(pickedType))
 				{
-					originalAmount=Picked.getAmount().get(j);
-					for(int count=1;count<originalAmount+1;count++)
+					Picked.getOrders().set(j, Pref.getOrders().get(i));
+					if(!sumIngredients(Storage)) 
 					{
-						Picked.getAmount().set(j,Picked.getAmount().get(j)-count);
-						Picked.setOrder(Preferences.getOrders().get(i), count);
-						if(!sumIngredients(Storage)) 
-							{
-								States.set(2, true);
-								States.set(1, false);
-								return;
-							}
-						else Picked.removeOrder(Picked.getOrders().size());
+						States.set(2, true);
+						States.set(1, false);
+						return;
 					}
-					Picked.getAmount().set(j,originalAmount);
 				}
+				
 			}
 		}
 		States.set(0, true);
+		Orders.get(0).setSuccess(false);
+		Ready.add(Orders.get(0));
 		Orders.remove(0);
-		
-		
 	}
 	public Integer getTargetx()
 	{
