@@ -3,6 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry excluding="*.asl" kind="src" path="src/asl"/>
 	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="lib" path="C:/Users/Viktor/Programok/Eclipse/jason/libs/jason-2.4.jar"/>
+	<classpathentry kind="var" path="JASON_INSTALL/libs/jason-2.4.jar" sourcepath="/JASON_INSTALL/libs/jason-2.4-sources.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
